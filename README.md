@@ -1,25 +1,30 @@
 # 🐍 Snake Game 🍎
 
-This is a simple implementation of the classic Snake Game using Python's Tkinter library.
+This is a simple implementation of the classic Snake Game using Python's Pygame library.
 
 ## 🎮 How to Play
 
 - Use the arrow keys (Up, Down, Left, Right) to control the snake's movement.
-- The objective is to eat the 🍎 red food pellets to grow the snake and earn points.
-- Avoid colliding with the walls or the snake's own body, as this will end the game.
-- Press 'R' to restart the game after it's over.
+- The objective is to eat the 🍎 green food pellets to grow the snake and earn points.
+- Avoid colliding with the walls, obstacles, or the snake's own body, as this will end the game.
+- Press 'P' to pause and resume the game.
+- Press 'C' to play again after losing.
+- Press 'M' to return to the main menu after losing.
+- Press 'H' to view high scores.
+- Press 'Q' to quit the game from the main menu.
 
 ## 📦 Dependencies
 
 - Python 3.x
-- Tkinter (usually included with Python installation)
+- Pygame
 
 ## 🚀 Installation and Execution
 
 1. Clone or download the repository to your local machine.
-2. Ensure you have Python installed on your system.
-3. Navigate to the directory containing the `snake.py` file.
-4. Run the script using the command `python snake.py` in your terminal or command prompt.
+2. Ensure you have Python and Pygame installed on your system.
+   - You can install Pygame using pip: `pip install pygame`
+3. Navigate to the directory containing the `dopegame.py` file.
+4. Run the script using the command `python dopegame.py` in your terminal or command prompt.
 
 ## 🎮 Controls
 
@@ -28,7 +33,11 @@ This is a simple implementation of the classic Snake Game using Python's Tkinter
   - Down arrow: Move the snake down
   - Left arrow: Move the snake left
   - Right arrow: Move the snake right
-- Press 'R' to restart the game after it's over.
+- Press 'P' to pause and resume the game.
+- Press 'C' to play again after losing.
+- Press 'M' to return to the main menu after losing.
+- Press 'H' to view high scores.
+- Press 'Q' to quit the game from the main menu.
 
 ## 🎨 Customization
 
