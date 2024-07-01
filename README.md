@@ -23,8 +23,8 @@ This is a simple implementation of the classic Snake Game using Python's Pygame 
 1. Clone or download the repository to your local machine.
 2. Ensure you have Python and Pygame installed on your system.
    - You can install Pygame using pip: `pip install pygame`
-3. Navigate to the directory containing the `dopegame.py` file.
-4. Run the script using the command `python dopegame.py` in your terminal or command prompt.
+3. Navigate to the directory containing the `snake.py` file.
+4. Run the script using the command `python snake.py` in your terminal or command prompt.
 
 ## 🎮 Controls
 
