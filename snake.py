@@ -149,7 +149,9 @@ def game_loop():
             message("You Lost!", RED, [SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 3])
             message(f"Score: {score}", WHITE, [SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2])
             message(f"High Score: {high_score}", WHITE, [SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 50])
-            message("Press C to Play Again or M for Main Menu", WHITE, [SCREEN_WIDTH / 6, SCREEN_HEIGHT / 1.5])
+            message("Press C to Play Again", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 1.5])
+            message("Press M for Main Menu", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 1.5 + 50])
+            
             pygame.display.update()
 
             for event in pygame.event.get():
