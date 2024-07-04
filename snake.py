@@ -202,6 +202,7 @@ class Game:
                         pygame.quit()
                         quit()
                     if event.key == pygame.K_s:
+                        self.reset_game()
                         self.game_loop()
                     if event.key == pygame.K_h:
                         self.display_high_scores()
@@ -222,14 +223,40 @@ class Game:
                     if event.key == pygame.K_b:
                         self.main_menu()
 
-    def game_loop(self):
-        game_over = False
+    def pause_menu(self):
+        while self.paused:
+            display.fill(BLUE)
+            self.display_message("Game Paused", WHITE, [SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 3])
+            self.display_message("Press R to Resume", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 2])
+            self.display_message("Press M for Main Menu", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 2 + 50])
+            self.display_message("Press Q to Quit", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 2 + 100])
+            pygame.display.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        self.paused = False
+                    if event.key == pygame.K_m:
+                        self.paused = False
+                        self.main_menu()
+                    if event.key == pygame.K_q:
+                        pygame.quit()
+                        quit()
+
+    def reset_game(self):
         self.snake = Snake()
         self.food = Food()
         self.power_up = PowerUp()
         self.score = 0
         self.level = 1
         self.obstacles = []
+        self.paused = False
+
+    def game_loop(self):
+        game_over = False
 
         while not game_over:
             while self.snake.check_collision():
@@ -237,6 +264,7 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_c:
+                            self.reset_game()
                             self.game_loop()
                         elif event.key == pygame.K_m:
                             self.main_menu()
@@ -257,12 +285,10 @@ class Game:
                     elif event.key == pygame.K_DOWN:
                         self.snake.change_direction('DOWN')
                     elif event.key == pygame.K_p:
-                        self.paused = not self.paused
+                        self.paused = True
+                        self.pause_menu()
 
             if self.paused:
-                display.fill(BLUE)
-                self.display_message("Game Paused! Press P to Resume", RED, [SCREEN_WIDTH / 6, SCREEN_HEIGHT / 3])
-                pygame.display.update()
                 continue
 
             self.snake.move()
