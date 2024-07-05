@@ -13,6 +13,7 @@ SNAKE_BLOCK = 10
 INITIAL_SNAKE_SPEED = 15
 SPEED_INCREMENT = 1
 HIGH_SCORE_FILE = "high_score.txt"
+LEADERBOARD_FILE = "leaderboard.txt"
 LEVEL_UP_SCORE = 5
 FINAL_LEVEL = 5
 POWER_UP_DURATION = 10000  # 10 seconds
@@ -25,10 +26,11 @@ RED = (213, 50, 80)
 GREEN = (0, 255, 0)
 BLUE = (50, 153, 213)
 PURPLE = (128, 0, 128)
+ORANGE = (255, 165, 0)
 
 # Set up the display
 display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Snake Game')
+pygame.display.set_caption('Enhanced Snake Game')
 
 # Clock
 clock = pygame.time.Clock()
@@ -119,16 +121,34 @@ class PowerUp:
             self.active = True
 
 
+class InvincibilityPowerUp(PowerUp):
+    def __init__(self):
+        super().__init__()
+        self.active = False
+        self.start_time = 0
+
+    def draw(self):
+        if self.active:
+            pygame.draw.rect(display, ORANGE, [self.position[0], self.position[1], SNAKE_BLOCK, SNAKE_BLOCK])
+
+    def activate(self):
+        self.active = False
+        self.start_time = pygame.time.get_ticks()
+
+
 class Game:
     def __init__(self):
         self.snake = Snake()
         self.food = Food()
         self.power_up = PowerUp()
+        self.invincibility_power_up = InvincibilityPowerUp()
         self.score = 0
         self.high_score = self.load_high_score()
+        self.leaderboard = self.load_leaderboard()
         self.level = 1
         self.obstacles = []
         self.paused = False
+        self.invincible = False
 
     def load_high_score(self):
         if os.path.exists(HIGH_SCORE_FILE):
@@ -136,9 +156,19 @@ class Game:
                 return int(file.read())
         return 0
 
+    def load_leaderboard(self):
+        if os.path.exists(LEADERBOARD_FILE):
+            with open(LEADERBOARD_FILE, 'r') as file:
+                return [int(score) for score in file.read().split()]
+        return []
+
     def save_high_score(self):
         with open(HIGH_SCORE_FILE, 'w') as file:
             file.write(str(self.high_score))
+
+    def save_leaderboard(self):
+        with open(LEADERBOARD_FILE, 'w') as file:
+            file.write(' '.join(map(str, sorted(self.leaderboard, reverse=True)[:5])))
 
     def draw_obstacles(self):
         for obstacle in self.obstacles:
@@ -158,6 +188,23 @@ class Game:
         display.blit(high_value, [0, 35])
         display.blit(level_value, [0, 70])
 
+    def display_leaderboard(self):
+        display.fill(BLUE)
+        self.display_message("Leaderboard", YELLOW, [SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 6])
+        for idx, score in enumerate(self.leaderboard[:5]):
+            self.display_message(f"{idx + 1}. {score}", WHITE, [SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 3 + idx * 50])
+        self.display_message("Press B to go Back", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 1.5])
+        pygame.display.update()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_b:
+                        self.main_menu()
+
     def display_message(self, msg, color, position):
         mesg = font_style.render(msg, True, color)
         display.blit(mesg, position)
@@ -170,6 +217,13 @@ class Game:
         self.display_message("Press C to Play Again", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 1.5])
         self.display_message("Press M for Main Menu", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 1.5 + 50])
         pygame.display.update()
+
+        if self.score > self.high_score:
+            self.high_score = self.score
+            self.save_high_score()
+
+        self.leaderboard.append(self.score)
+        self.save_leaderboard()
 
     def main_menu(self):
         menu = True
@@ -185,11 +239,13 @@ class Game:
             menu_font = pygame.font.SysFont(None, 40)
             start_text = menu_font.render("Press S to Start", True, WHITE)
             high_scores_text = menu_font.render("Press H for High Scores", True, WHITE)
+            leaderboard_text = menu_font.render("Press L for Leaderboard", True, WHITE)
             quit_text = menu_font.render("Press Q to Quit", True, WHITE)
 
             display.blit(start_text, (SCREEN_WIDTH / 2 - start_text.get_width() / 2, SCREEN_HEIGHT / 2))
             display.blit(high_scores_text, (SCREEN_WIDTH / 2 - high_scores_text.get_width() / 2, SCREEN_HEIGHT / 2 + 50))
-            display.blit(quit_text, (SCREEN_WIDTH / 2 - quit_text.get_width() / 2, SCREEN_HEIGHT / 2 + 100))
+            display.blit(leaderboard_text, (SCREEN_WIDTH / 2 - leaderboard_text.get_width() / 2, SCREEN_HEIGHT / 2 + 100))
+            display.blit(quit_text, (SCREEN_WIDTH / 2 - quit_text.get_width() / 2, SCREEN_HEIGHT / 2 + 150))
 
             pygame.display.update()
 
@@ -206,6 +262,8 @@ class Game:
                         self.game_loop()
                     if event.key == pygame.K_h:
                         self.display_high_scores()
+                    if event.key == pygame.K_l:
+                        self.display_leaderboard()
 
     def display_high_scores(self):
         display.fill(BLUE)
@@ -250,10 +308,12 @@ class Game:
         self.snake = Snake()
         self.food = Food()
         self.power_up = PowerUp()
+        self.invincibility_power_up = InvincibilityPowerUp()
         self.score = 0
         self.level = 1
         self.obstacles = []
         self.paused = False
+        self.invincible = False
 
     def game_loop(self):
         game_over = False
@@ -309,15 +369,23 @@ class Game:
                 self.power_up.activate()
                 self.snake.speed += 5  # Speed boost
 
+            if self.snake.body[-1] == self.invincibility_power_up.position:
+                self.invincibility_power_up.activate()
+                self.invincible = True
+
             self.power_up.check_duration()
 
+            if not self.invincibility_power_up.active:
+                self.invincible = False
+
             for obstacle in self.obstacles:
-                if self.snake.body[-1] == obstacle[:2]:
+                if self.snake.body[-1] == obstacle[:2] and not self.invincible:
                     game_over = True
 
             display.fill(BLACK)
             self.food.draw()
             self.power_up.draw()
+            self.invincibility_power_up.draw()
             self.snake.draw()
             self.draw_obstacles()
             self.display_score()
