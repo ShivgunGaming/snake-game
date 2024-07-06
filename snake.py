@@ -3,39 +3,21 @@ import time
 import random
 import os
 
-# Initialize Pygame
 pygame.init()
 
-# Constants
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-SNAKE_BLOCK = 10
-INITIAL_SNAKE_SPEED = 15
-SPEED_INCREMENT = 1
-HIGH_SCORE_FILE = "high_score.txt"
-LEADERBOARD_FILE = "leaderboard.txt"
-LEVEL_UP_SCORE = 5
-FINAL_LEVEL = 5
-POWER_UP_DURATION = 10000  # 10 seconds
+SCREEN_WIDTH, SCREEN_HEIGHT, SNAKE_BLOCK = 800, 600, 10
+INITIAL_SNAKE_SPEED, SPEED_INCREMENT = 15, 1
+HIGH_SCORE_FILE, LEADERBOARD_FILE = "high_score.txt", "leaderboard.txt"
+LEVEL_UP_SCORE, FINAL_LEVEL, POWER_UP_DURATION = 5, 5, 10000
 
-# Colors
-WHITE = (255, 255, 255)
-YELLOW = (255, 255, 102)
-BLACK = (0, 0, 0)
-RED = (213, 50, 80)
-GREEN = (0, 255, 0)
-BLUE = (50, 153, 213)
-PURPLE = (128, 0, 128)
-ORANGE = (255, 165, 0)
+WHITE, YELLOW, BLACK = (255, 255, 255), (255, 255, 102), (0, 0, 0)
+RED, GREEN, BLUE = (213, 50, 80), (0, 255, 0), (50, 153, 213)
+PURPLE, ORANGE = (128, 0, 128), (255, 165, 0)
 
-# Set up the display
 display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Enhanced Snake Game')
-
-# Clock
 clock = pygame.time.Clock()
 
-# Font style
 font_style = pygame.font.SysFont(None, 50)
 score_font = pygame.font.SysFont(None, 35)
 
@@ -74,11 +56,7 @@ class Snake:
 
     def check_collision(self):
         head = self.body[-1]
-        if head[0] >= SCREEN_WIDTH or head[0] < 0 or head[1] >= SCREEN_HEIGHT or head[1] < 0:
-            return True
-        if head in self.body[:-1]:
-            return True
-        return False
+        return head[0] >= SCREEN_WIDTH or head[0] < 0 or head[1] >= SCREEN_HEIGHT or head[1] < 0 or head in self.body[:-1]
 
 
 class Food:
@@ -86,10 +64,8 @@ class Food:
         self.position = self.generate_position()
 
     def generate_position(self):
-        return [
-            round(random.randrange(0, SCREEN_WIDTH - SNAKE_BLOCK) / 10.0) * 10.0,
-            round(random.randrange(0, SCREEN_HEIGHT - SNAKE_BLOCK) / 10.0) * 10.0
-        ]
+        return [round(random.randrange(0, SCREEN_WIDTH - SNAKE_BLOCK) / 10.0) * 10.0,
+                round(random.randrange(0, SCREEN_HEIGHT - SNAKE_BLOCK) / 10.0) * 10.0]
 
     def draw(self):
         pygame.draw.rect(display, GREEN, [self.position[0], self.position[1], SNAKE_BLOCK, SNAKE_BLOCK])
@@ -102,10 +78,8 @@ class PowerUp:
         self.start_time = 0
 
     def generate_position(self):
-        return [
-            round(random.randrange(0, SCREEN_WIDTH - SNAKE_BLOCK) / 10.0) * 10.0,
-            round(random.randrange(0, SCREEN_HEIGHT - SNAKE_BLOCK) / 10.0) * 10.0
-        ]
+        return [round(random.randrange(0, SCREEN_WIDTH - SNAKE_BLOCK) / 10.0) * 10.0,
+                round(random.randrange(0, SCREEN_HEIGHT - SNAKE_BLOCK) / 10.0) * 10.0]
 
     def draw(self):
         if self.active:
@@ -151,16 +125,10 @@ class Game:
         self.invincible = False
 
     def load_high_score(self):
-        if os.path.exists(HIGH_SCORE_FILE):
-            with open(HIGH_SCORE_FILE, 'r') as file:
-                return int(file.read())
-        return 0
+        return int(open(HIGH_SCORE_FILE).read()) if os.path.exists(HIGH_SCORE_FILE) else 0
 
     def load_leaderboard(self):
-        if os.path.exists(LEADERBOARD_FILE):
-            with open(LEADERBOARD_FILE, 'r') as file:
-                return [int(score) for score in file.read().split()]
-        return []
+        return [int(score) for score in open(LEADERBOARD_FILE).read().split()] if os.path.exists(LEADERBOARD_FILE) else []
 
     def save_high_score(self):
         with open(HIGH_SCORE_FILE, 'w') as file:
@@ -175,18 +143,15 @@ class Game:
             pygame.draw.rect(display, RED, obstacle)
 
     def add_obstacles(self):
-        for _ in range(self.level):  # Add more obstacles as the level increases
+        for _ in range(self.level):
             self.obstacles.append([round(random.randrange(0, SCREEN_WIDTH - SNAKE_BLOCK) / 10.0) * 10.0,
                                    round(random.randrange(0, SCREEN_HEIGHT - SNAKE_BLOCK) / 10.0) * 10.0,
                                    SNAKE_BLOCK, SNAKE_BLOCK])
 
     def display_score(self):
-        value = score_font.render("Your Score: " + str(self.score), True, YELLOW)
-        high_value = score_font.render("High Score: " + str(self.high_score), True, YELLOW)
-        level_value = score_font.render("Level: " + str(self.level), True, YELLOW)
-        display.blit(value, [0, 0])
-        display.blit(high_value, [0, 35])
-        display.blit(level_value, [0, 70])
+        display.blit(score_font.render(f"Your Score: {self.score}", True, YELLOW), [0, 0])
+        display.blit(score_font.render(f"High Score: {self.high_score}", True, YELLOW), [0, 35])
+        display.blit(score_font.render(f"Level: {self.level}", True, YELLOW), [0, 70])
 
     def display_leaderboard(self):
         display.fill(BLUE)
@@ -201,13 +166,11 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_b:
-                        self.main_menu()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_b:
+                    self.main_menu()
 
     def display_message(self, msg, color, position):
-        mesg = font_style.render(msg, True, color)
-        display.blit(mesg, position)
+        display.blit(font_style.render(msg, True, color), position)
 
     def game_over_screen(self):
         display.fill(BLUE)
@@ -229,34 +192,19 @@ class Game:
         menu = True
         while menu:
             display.fill(BLUE)
-
-            # Title
-            title_font = pygame.font.SysFont(None, 80)
-            title_text = title_font.render("Snake Game", True, YELLOW)
+            title_text = pygame.font.SysFont(None, 80).render("Snake Game", True, YELLOW)
             display.blit(title_text, (SCREEN_WIDTH / 2 - title_text.get_width() / 2, SCREEN_HEIGHT / 3 - title_text.get_height()))
-
-            # Menu options
-            menu_font = pygame.font.SysFont(None, 40)
-            start_text = menu_font.render("Press S to Start", True, WHITE)
-            high_scores_text = menu_font.render("Press H for High Scores", True, WHITE)
-            leaderboard_text = menu_font.render("Press L for Leaderboard", True, WHITE)
-            quit_text = menu_font.render("Press Q to Quit", True, WHITE)
-
-            display.blit(start_text, (SCREEN_WIDTH / 2 - start_text.get_width() / 2, SCREEN_HEIGHT / 2))
-            display.blit(high_scores_text, (SCREEN_WIDTH / 2 - high_scores_text.get_width() / 2, SCREEN_HEIGHT / 2 + 50))
-            display.blit(leaderboard_text, (SCREEN_WIDTH / 2 - leaderboard_text.get_width() / 2, SCREEN_HEIGHT / 2 + 100))
-            display.blit(quit_text, (SCREEN_WIDTH / 2 - quit_text.get_width() / 2, SCREEN_HEIGHT / 2 + 150))
-
+            options = ["Press S to Start", "Press H for High Scores", "Press L for Leaderboard", "Press Q to Quit"]
+            for idx, option in enumerate(options):
+                display.blit(pygame.font.SysFont(None, 40).render(option, True, WHITE),
+                             (SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + idx * 50))
             pygame.display.update()
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q):
                     pygame.quit()
                     quit()
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
-                        pygame.quit()
-                        quit()
                     if event.key == pygame.K_s:
                         self.reset_game()
                         self.game_loop()
@@ -277,17 +225,16 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_b:
-                        self.main_menu()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_b:
+                    self.main_menu()
 
     def pause_menu(self):
         while self.paused:
             display.fill(BLUE)
             self.display_message("Game Paused", WHITE, [SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 3])
-            self.display_message("Press R to Resume", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 2])
-            self.display_message("Press M for Main Menu", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 2 + 50])
-            self.display_message("Press Q to Quit", WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 2 + 100])
+            options = ["Press R to Resume", "Press M for Main Menu", "Press Q to Quit"]
+            for idx, option in enumerate(options):
+                self.display_message(option, WHITE, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 2 + idx * 50])
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -367,16 +314,14 @@ class Game:
 
             if self.snake.body[-1] == self.power_up.position:
                 self.power_up.activate()
-                self.snake.speed += 5  # Speed boost
+                self.snake.speed += 5
 
             if self.snake.body[-1] == self.invincibility_power_up.position:
                 self.invincibility_power_up.activate()
                 self.invincible = True
 
             self.power_up.check_duration()
-
-            if not self.invincibility_power_up.active:
-                self.invincible = False
+            self.invincible = self.invincibility_power_up.active
 
             for obstacle in self.obstacles:
                 if self.snake.body[-1] == obstacle[:2] and not self.invincible:
@@ -390,7 +335,6 @@ class Game:
             self.draw_obstacles()
             self.display_score()
             pygame.display.update()
-
             clock.tick(self.snake.speed)
 
         pygame.quit()
@@ -398,5 +342,4 @@ class Game:
 
 
 if __name__ == "__main__":
-    game = Game()
-    game.main_menu()
+    Game().main_menu()
