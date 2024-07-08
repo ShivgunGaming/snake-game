@@ -53,6 +53,7 @@ class Snake:
     def draw(self):
         for segment in self.body:
             pygame.draw.rect(display, WHITE, [segment[0], segment[1], SNAKE_BLOCK, SNAKE_BLOCK])
+            pygame.draw.rect(display, BLACK, [segment[0] + 2, segment[1] + 2, SNAKE_BLOCK - 4, SNAKE_BLOCK - 4])
 
     def check_collision(self):
         head = self.body[-1]
@@ -69,6 +70,7 @@ class Food:
 
     def draw(self):
         pygame.draw.rect(display, GREEN, [self.position[0], self.position[1], SNAKE_BLOCK, SNAKE_BLOCK])
+        pygame.draw.rect(display, WHITE, [self.position[0] + 2, self.position[1] + 2, SNAKE_BLOCK - 4, SNAKE_BLOCK - 4])
 
 
 class PowerUp:
@@ -84,6 +86,7 @@ class PowerUp:
     def draw(self):
         if self.active:
             pygame.draw.rect(display, PURPLE, [self.position[0], self.position[1], SNAKE_BLOCK, SNAKE_BLOCK])
+            pygame.draw.rect(display, WHITE, [self.position[0] + 2, self.position[1] + 2, SNAKE_BLOCK - 4, SNAKE_BLOCK - 4])
 
     def activate(self):
         self.active = False
@@ -104,6 +107,7 @@ class InvincibilityPowerUp(PowerUp):
     def draw(self):
         if self.active:
             pygame.draw.rect(display, ORANGE, [self.position[0], self.position[1], SNAKE_BLOCK, SNAKE_BLOCK])
+            pygame.draw.rect(display, WHITE, [self.position[0] + 2, self.position[1] + 2, SNAKE_BLOCK - 4, SNAKE_BLOCK - 4])
 
     def activate(self):
         self.active = False
@@ -141,6 +145,7 @@ class Game:
     def draw_obstacles(self):
         for obstacle in self.obstacles:
             pygame.draw.rect(display, RED, obstacle)
+            pygame.draw.rect(display, BLACK, [obstacle[0] + 2, obstacle[1] + 2, obstacle[2] - 4, obstacle[3] - 4])
 
     def add_obstacles(self):
         for _ in range(self.level):
